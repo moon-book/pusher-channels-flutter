@@ -128,11 +128,15 @@ class PusherChannelsFlutterWeb {
     final String event = msg['event'] ?? '';
     final String channel = msg['channel'] ?? '';
     late Map<String, dynamic> data;
-    try {
+
+    if (msg["data"] == null || msg["data"] is Map) {
       data = msg['data'] ?? {};
-    } catch (_) {
+    } else if (msg["data"] is String) {
       data = msg;
+    } else {
+      data = {};
     }
+
     String? userId;
     Map<String, dynamic>? userInfo;
     try {
