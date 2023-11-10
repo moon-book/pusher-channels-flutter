@@ -127,9 +127,21 @@ class PusherChannelsFlutterWeb {
     final Map<String, dynamic> msg = dartify<Map<String, dynamic>>(jsMessage);
     final String event = msg['event'] ?? '';
     final String channel = msg['channel'] ?? '';
-    final Map<String, dynamic> data = msg['data'] ?? {};
-    String? userId = data['user_id'];
-    final Map<String, dynamic>? userInfo = data['user_info'];
+    Map<String, dynamic>? data;
+
+    if (msg["data"] == null || msg["data"] is Map) {
+      data = msg['data'] ?? {};
+    } else if (msg["data"] is String) {
+      data = msg;
+    } else {
+      data = {};
+    }
+
+    String? userId;
+    Map<String, dynamic>? userInfo;
+
+    userId = data!['user_id'];
+    userInfo = data!['user_info'];
 
     if (event == 'pusher_internal:subscription_error') {
       methodChannel!.invokeMethod(
@@ -158,10 +170,10 @@ class PusherChannelsFlutterWeb {
         }
       }
       methodChannel!.invokeMethod('onEvent', {
-        'channelName': channel,
-        'eventName': event,
+        'channelName': channel ?? "-1",
+        'eventName': event ?? "-1",
         'data': data,
-        'userId': userId,
+        'userId': userId ?? "-1",
       });
     }
   }
